@@ -28,7 +28,7 @@ function removeUnwantedImages() {
 }
 
 function networkDown() {
-  # stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3
+  # stop org3 containers also in addition to artist and buyer, in case we were running sample to add org3
   docker-compose -f $COMPOSE_FILE_BASE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_CA down --volumes --remove-orphans
   # docker-compose -f $COMPOSE_FILE_COUCH_ORG3 -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans
   # Don't remove the generated artifacts -- note, the ledgers are always removed
@@ -41,8 +41,8 @@ function networkDown() {
     # remove orderer block and other channel configuration transactions and certs
     sudo rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations
     ## remove fabric ca artifacts
-    sudo rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db
-    sudo rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca/org2/ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/org2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db
+    sudo rm -rf organizations/fabric-ca/artist/msp organizations/fabric-ca/artist/tls-cert.pem organizations/fabric-ca/artist/ca-cert.pem organizations/fabric-ca/artist/IssuerPublicKey organizations/fabric-ca/artist/IssuerRevocationPublicKey organizations/fabric-ca/artist/fabric-ca-server.db
+    sudo rm -rf organizations/fabric-ca/buyer/msp organizations/fabric-ca/buyer/tls-cert.pem organizations/fabric-ca/buyer/ca-cert.pem organizations/fabric-ca/buyer/IssuerPublicKey organizations/fabric-ca/buyer/IssuerRevocationPublicKey organizations/fabric-ca/buyer/fabric-ca-server.db
     sudo rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db
     #sudo rm -rf addOrg3/fabric-ca/org3/msp addOrg3/fabric-ca/org3/tls-cert.pem addOrg3/fabric-ca/org3/ca-cert.pem addOrg3/fabric-ca/org3/IssuerPublicKey addOrg3/fabric-ca/org3/IssuerRevocationPublicKey addOrg3/fabric-ca/org3/fabric-ca-server.db
 

@@ -5,8 +5,8 @@ source ./00_setEnv.sh
 # Set OrdererOrg.Admin globals
 setOrdererGlobals() {
   export CORE_PEER_LOCALMSPID="OrdererMSP"
-  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/ordererOrganizations/example.com/users/Admin@example.com/msp
+  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/ordererOrganizations/mediacoin.com/orderers/orderer.mediacoin.com/msp/tlscacerts/tlsca.mediacoin.com-cert.pem
+  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/ordererOrganizations/mediacoin.com/users/Admin@mediacoin.com/msp
 }
 
 # Set environment variables for the peer org
@@ -19,20 +19,20 @@ setGlobals() {
   fi
   echo "Using organization ${USING_ORG}"
   if [ $USING_ORG -eq 1 ]; then
-    export CORE_PEER_LOCALMSPID="Org1MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    export CORE_PEER_LOCALMSPID="ArtistMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ARTIST_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/artist.mediacoin.com/users/Admin@artist.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
   elif [ $USING_ORG -eq 2 ]; then
-    export CORE_PEER_LOCALMSPID="Org2MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+    export CORE_PEER_LOCALMSPID="BuyerMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/users/Admin@buyer.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
 
   elif [ $USING_ORG -eq 3 ]; then
     export CORE_PEER_LOCALMSPID="Org3MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.mediacoin.com/users/Admin@org3.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
   else
     echo "================== ERROR !!! ORG Unknown =================="
@@ -43,10 +43,10 @@ setGlobals() {
   fi
 }
 
-setGlobalsForPeer0Org1() {
-    export CORE_PEER_LOCALMSPID="Org1MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+setGlobalsForPeer0Artist() {
+    export CORE_PEER_LOCALMSPID="ArtistMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ARTIST_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/artist.mediacoin.com/users/Admin@artist.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
 }
 # parsePeerConnectionParameters $@
@@ -174,7 +174,7 @@ approveForMyOrg() {
   ORG=$1
   setGlobals $ORG
   set -x
-  peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name $CC_NAME --version ${VERSION} --init-required --package-id ${PACKAGE_ID} --sequence ${VERSION} >&log.txt
+  peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.mediacoin.com --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name $CC_NAME --version ${VERSION} --init-required --package-id ${PACKAGE_ID} --sequence ${VERSION} >&log.txt
   set +x
   cat log.txt
   verifyResult $res "Chaincode definition approved on peer0.org${ORG} on channel '$CHANNEL_NAME' failed"
@@ -228,13 +228,13 @@ commitChaincodeDefinition() {
   set -x
   peer lifecycle chaincode commit \
     -o localhost:7050 \
-    --ordererTLSHostnameOverride orderer.example.com \
+    --ordererTLSHostnameOverride orderer.mediacoin.com \
     --tls $CORE_PEER_TLS_ENABLED \
     --cafile $ORDERER_CA \
     --channelID $CHANNEL_NAME \
     --name $CC_NAME \
-    --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-    --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ARTIST_CA \
+    --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_BUYER_CA \
     --version ${VERSION} \
     --sequence ${VERSION} \
     --init-required >&log.txt
@@ -290,12 +290,13 @@ chaincodeInvokeInit() {
   set -x
   peer chaincode invoke \
     -o localhost:7050 \
-    --ordererTLSHostnameOverride orderer.example.com \
+    --ordererTLSHostnameOverride orderer.mediacoin.com \
     --tls $CORE_PEER_TLS_ENABLED \
     --cafile $ORDERER_CA \
     -C $CHANNEL_NAME \
     -n $CC_NAME \
-    $PEER_CONN_PARMS \
+    --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ARTIST_CA \
+    --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_BUYER_CA \
     --isInit \
     -c '{"function":"initLedger","Args":[]}' >&log.txt
   res=$?
@@ -339,30 +340,30 @@ chaincodeQuery() {
 ## at first we package the chaincode
 packageChaincode 1
 
-## Install chaincode on peer0.org1 and peer0.org2
-echo "Installing chaincode on peer0.org1..."
+## Install chaincode on peer0.artist and peer0.buyer
+echo "Installing chaincode on peer0.artist..."
 installChaincode 1
-echo "Install chaincode on peer0.org2..."
+echo "Install chaincode on peer0.buyer..."
 installChaincode 2
 
 ## query whether the chaincode is installed
 queryInstalled 1
 
-## approve the definition for org1
+## approve the definition for artist
 approveForMyOrg 1
 
 ## check whether the chaincode definition is ready to be committed
-## expect org1 to have approved and org2 not to
-checkCommitReadiness 1 "\"Org1MSP\": true" "\"Org2MSP\": false"
-checkCommitReadiness 2 "\"Org1MSP\": true" "\"Org2MSP\": false"
+## expect artist to have approved and buyer not to
+checkCommitReadiness 1 "\"ArtistMSP\": true" "\"BuyerMSP\": false"
+checkCommitReadiness 2 "\"ArtistMSP\": true" "\"BuyerMSP\": false"
 
-## now approve also for org2
+## now approve also for buyer
 approveForMyOrg 2
 
 ## check whether the chaincode definition is ready to be committed
 ## expect them both to have approved
-checkCommitReadiness 1 "\"Org1MSP\": true" "\"Org2MSP\": true"
-checkCommitReadiness 2 "\"Org1MSP\": true" "\"Org2MSP\": true"
+checkCommitReadiness 1 "\"ArtistMSP\": true" "\"BuyerMSP\": true"
+checkCommitReadiness 2 "\"ArtistMSP\": true" "\"BuyerMSP\": true"
 
 ## now that we know for sure both orgs have approved, commit the definition
 commitChaincodeDefinition 1 2
@@ -376,8 +377,8 @@ chaincodeInvokeInit 1 2
 
 sleep 10
 
-# Query chaincode on peer0.org1
-echo "Querying chaincode on peer0.org1..."
+# Query chaincode on peer0.artist
+echo "Querying chaincode on peer0.artist..."
 chaincodeQuery 1
 
 exit 0

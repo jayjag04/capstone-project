@@ -3,10 +3,10 @@
 source ./00_setEnv.sh
 
 # export CORE_PEER_TLS_ENABLED=true
-# export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-# export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-# export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-# export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+# export ORDERER_CA=${PWD}/organizations/ordererOrganizations/mediacoin.com/orderers/orderer.mediacoin.com/msp/tlscacerts/tlsca.mediacoin.com-cert.pem
+# export PEER0_ARTIST_CA=${PWD}/organizations/peerOrganizations/artist.mediacoin.com/peers/peer0.artist.mediacoin.com/tls/ca.crt
+# export PEER0_BUYER_CA=${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls/ca.crt
+# export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.mediacoin.com/peers/peer0.org3.mediacoin.com/tls/ca.crt
 
 # CHANNEL_NAME="$1"
 # DELAY="$2"
@@ -32,20 +32,20 @@ setGlobals() {
   fi
   echo "Using organization ${USING_ORG}"
   if [ $USING_ORG -eq 1 ]; then
-    export CORE_PEER_LOCALMSPID="Org1MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    export CORE_PEER_LOCALMSPID="ArtistMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ARTIST_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/artist.mediacoin.com/users/Admin@artist.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
   elif [ $USING_ORG -eq 2 ]; then
-    export CORE_PEER_LOCALMSPID="Org2MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+    export CORE_PEER_LOCALMSPID="BuyerMSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/users/Admin@buyer.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
 
   elif [ $USING_ORG -eq 3 ]; then
     export CORE_PEER_LOCALMSPID="Org3MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.mediacoin.com/users/Admin@org3.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
   else
     echo "================== ERROR !!! ORG Unknown =================="
@@ -72,7 +72,7 @@ createChannelTx() {
 
 createAncorPeerTx() {
 
-	for orgmsp in Org1MSP Org2MSP; do
+	for orgmsp in ArtistMSP BuyerMSP; do
 
 	echo "#######    Generating anchor peer update for ${orgmsp}  ##########"
 	set -x
@@ -98,7 +98,7 @@ createChannel() {
 		peer channel create \
             -o localhost:7050 \
             -c $CHANNEL_NAME \
-            --ordererTLSHostnameOverride orderer.example.com \
+            --ordererTLSHostnameOverride orderer.mediacoin.com \
             -f ./channel-artifacts/${CHANNEL_NAME}.tx \
             --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block \
             --tls $CORE_PEER_TLS_ENABLED \
@@ -145,7 +145,7 @@ updateAnchorPeers() {
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
     sleep $DELAY
     set -x
-		peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&log.txt
+		peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.mediacoin.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&log.txt
     res=$?
     set +x
 		let rc=$res
@@ -178,15 +178,15 @@ echo "Creating channel "$CHANNEL_NAME
 createChannel
 
 ## Join all the peers to the channel
-echo "Join Org1 peers to the channel..."
+echo "Join Artist peers to the channel..."
 joinChannel 1
-echo "Join Org2 peers to the channel..."
+echo "Join Buyer peers to the channel..."
 joinChannel 2
 
 ## Set the anchor peers for each org in the channel
-echo "Updating anchor peers for org1..."
+echo "Updating anchor peers for artist..."
 updateAnchorPeers 1
-echo "Updating anchor peers for org2..."
+echo "Updating anchor peers for buyer..."
 updateAnchorPeers 2
 
 echo

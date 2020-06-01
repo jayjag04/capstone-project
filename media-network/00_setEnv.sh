@@ -5,10 +5,10 @@ export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=false
 
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/mediacoin.com/orderers/orderer.mediacoin.com/msp/tlscacerts/tlsca.mediacoin.com-cert.pem
+export PEER0_ARTIST_CA=${PWD}/organizations/peerOrganizations/artist.mediacoin.com/peers/peer0.artist.mediacoin.com/tls/ca.crt
+export PEER0_BUYER_CA=${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.mediacoin.com/peers/peer0.org3.mediacoin.com/tls/ca.crt
 
 # Obtain the OS and Architecture string that will be used to select the correct
 # native binaries for your platform, e.g., darwin-amd64 or linux-amd64
@@ -42,5 +42,5 @@ export IMAGETAG="latest"
 # default database
 DATABASE="leveldb"
 # chaincode name
-export CC_NAME="fabcar"
+export CC_NAME="mediacoin"
 export DELAY=3
