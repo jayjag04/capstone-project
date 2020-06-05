@@ -30,6 +30,8 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
+ 
+
     @GetMapping
     public String getAllMedia() throws Exception {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
@@ -46,16 +48,18 @@ public class DemoApplication {
         try (Gateway gateway = builder.connect()) {
             // get the network and contract
             Network network = gateway.getNetwork("mediachannel");
-            Contract contract = network.getContract("fabcar");
+            Contract contract = network.getContract("mediacoin");
 
             byte[] result;
+           
+           
             System.out.println("*************** Query all media ***************");
             result = contract.evaluateTransaction("queryAllCars");
             System.out.println(new String(result));
 
-            contract.submitTransaction("CreateAlbumContract", "CONTRACT01", "Hyperledger Sings", 10000, "NEW");
-
-             result = contract.evaluateTransaction("queryMedium", "CONTRACT01");
+            contract.submitTransaction("CreateAlbumContract", "CONTRACT101", "Hyperledger Sings", "10000", "NEW");
+ System.out.println("*************** Query CONTRACT02 ***************");
+             result = contract.evaluateTransaction("queryMedium", "CONTRACT101");
             System.out.println(new String(result));
 
 

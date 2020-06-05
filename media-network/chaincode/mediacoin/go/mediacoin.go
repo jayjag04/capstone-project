@@ -41,15 +41,21 @@ type Car struct {
 }
 
 type MediaContract struct {
-	Name string `json:"name"`
-	Status string `json:"status"`
+	// Name string `json:"name"`
 	ContractFor string `json:"contractfor"`
+	ContractStatus string `json:"status"`
+	ContractValue int  `json:"contractvalue`
 }
 
 // QueryResult structure used for handling result of query
 type QueryResult struct {
 	Key    string `json:"Key"`
 	Record *Car
+}
+
+type MediaQueryResult struct {
+	Key    string `json:"Key"`
+	Record *MediaContract
 }
 
 // InitLedger adds a base set of cars to the ledger
@@ -68,7 +74,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 	}
 
 	contracts := []MediaContract{
-		MediaContract{Name: "Night Falls", Status: "Open", ContractFor: "Michael Jackson"},
+		MediaContract{ContractFor: "Night Falls", ContractStatus: "Open", ContractValue: 100}, 
 	}
 
 	for i, car := range cars {
@@ -123,23 +129,28 @@ func (s *SmartContract) QueryCar(ctx contractapi.TransactionContextInterface, ca
 	return car, nil
 }
 
-func (s *SmartContract) CreateAlbumContract(ctx contractapi.TransactionContextInterface, contractId string, albumName string, contractValue int, contractStatus string) error {
+func (s *SmartContract) CreateAlbumContract(ctx contractapi.TransactionContextInterface, 
+								contractId string, 
+								albumName string, 
+								contractValue int, 
+								contractStatus string) error {
 	
-	mediaContract := MediaContract{Name: "Night Falls", Status: "Open", ContractFor: "Michael Jackson"}
+	mediaContract := MediaContract{  ContractStatus: contractStatus, ContractFor: albumName, ContractValue: contractValue }
 
 	mediaContractAsBytes, _ := json.Marshal(mediaContract)
 
 	return ctx.GetStub().PutState(contractId, mediaContractAsBytes)
 }
-func (s *SmartContract) QueryMedium(ctx contractapi.TransactionContextInterface, contractNo string) (*MediaContract, error) {
-	contractAsBytes, err := ctx.GetStub().GetState(contractNo)
+
+func (s *SmartContract) QueryMedium(ctx contractapi.TransactionContextInterface, contractId string) (*MediaContract, error) {
+	contractAsBytes, err := ctx.GetStub().GetState(contractId)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state. %s", err.Error())
 	}
 
 	if contractAsBytes == nil {
-		return nil, fmt.Errorf("%s does not exist", contractNo)
+		return nil, fmt.Errorf("%s does not exist", contractId)
 	}
 
 	contract := new(MediaContract)
@@ -148,7 +159,7 @@ func (s *SmartContract) QueryMedium(ctx contractapi.TransactionContextInterface,
 	return contract, nil
 }
 
-// QueryAllCars returns all cars found in world state
+// QueryAllCars returns all contracts found in world state
 func (s *SmartContract) QueryAllCars(ctx contractapi.TransactionContextInterface) ([]QueryResult, error) {
 	startKey := "CAR0"
 	endKey := "CAR99"
@@ -173,6 +184,37 @@ func (s *SmartContract) QueryAllCars(ctx contractapi.TransactionContextInterface
 		_ = json.Unmarshal(queryResponse.Value, car)
 
 		queryResult := QueryResult{Key: queryResponse.Key, Record: car}
+		results = append(results, queryResult)
+	}
+
+	return results, nil
+}
+
+// QueryAllMediaContracts returns all contracts found in world state
+func (s *SmartContract) QueryAllMediaContracts(ctx contractapi.TransactionContextInterface) ([]MediaQueryResult, error) {
+	startKey := "CONTRACT00"
+	endKey := "CONTRACT99"
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	results := []MediaQueryResult{}
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		mediaContract := new(MediaContract)
+		_ = json.Unmarshal(queryResponse.Value, mediaContract)
+
+		queryResult := MediaQueryResult{Key: queryResponse.Key, Record: mediaContract}
 		results = append(results, queryResult)
 	}
 
