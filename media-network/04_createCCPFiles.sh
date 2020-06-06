@@ -36,7 +36,8 @@ CAPEM=organizations/peerOrganizations/artist.mediacoin.com/ca/ca.artist.mediacoi
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/artist.mediacoin.com/connection-artist.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/artist.mediacoin.com/connection-artist.yaml
 
-cp organizations/peerOrganizations/artist.mediacoin.com/connection-artist.json /home/ubuntu/wallet
+cp organizations/peerOrganizations/artist.mediacoin.com/connection-artist.json /home/ubuntu/wallet/
+cp ${CAPEM} /home/ubuntu/wallet/
 
 ORG=2
 P0PORT=9051
