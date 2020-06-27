@@ -38,12 +38,12 @@ setGlobals() {
     export CORE_PEER_ADDRESS=localhost:9051
 
   elif [ $USING_ORG -eq 3 ]; then
-    export CORE_PEER_LOCALMSPID="Org3MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.mediacoin.com/users/Admin@org3.mediacoin.com/msp
+    export CORE_PEER_LOCALMSPID="Buyer2MSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER2_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/buyer2.mediacoin.com/users/Admin@buyer2.mediacoin.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
   else
-    echo "================== ERROR !!! ORG Unknown =================="
+    echo "================== ERROR !!! ORG Unknown ==================" 
   fi
 
   if [ "$VERBOSE" == "true" ]; then

@@ -28,7 +28,7 @@ function removeUnwantedImages() {
 }
 
 function networkDown() {
-  # stop org3 containers also in addition to artist and buyer, in case we were running sample to add org3
+  # stop buyer2 containers also in addition to artist and buyer, in case we were running sample to add buyer2
   docker-compose \
     -f $COMPOSE_FILE_BASE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_CA \
     -f docker/docker-compose-buyer2.yaml -f docker/docker-compose-couch-buyer2.yaml -f docker/docker-compose-ca-buyer2.yaml \
@@ -48,7 +48,7 @@ function networkDown() {
     sudo rm -rf organizations/fabric-ca/buyer2/msp organizations/fabric-ca/buyer2/tls-cert.pem organizations/fabric-ca/buyer2/ca-cert.pem organizations/fabric-ca/buyer2/IssuerPublicKey organizations/fabric-ca/buyer2/IssuerRevocationPublicKey organizations/fabric-ca/buyer2/fabric-ca-server.db
 
     # remove channel and script artifacts
-    sudo rm -rf channel-artifacts log.txt log.txt1 ${CC_NAME}.tar.gz ${CC_NAME}
+    sudo rm -rf channel-artifacts log.txt log.txt1 ${CC_NAME}.tar.gz ${CC_NAME} ${CC_NAME2}.tar.gz
   
 }
 

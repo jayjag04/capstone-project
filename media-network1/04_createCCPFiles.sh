@@ -47,3 +47,12 @@ CAPEM=organizations/peerOrganizations/buyer.mediacoin.com/ca/ca.buyer.mediacoin.
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer.mediacoin.com/connection-buyer.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer.mediacoin.com/connection-buyer.yaml
+
+ORG=3
+P0PORT=11051
+CAPORT=8054
+PEERPEM=organizations/peerOrganizations/buyer2.mediacoin.com/tlsca/tlsca.buyer2.mediacoin.com-cert.pem
+CAPEM=organizations/peerOrganizations/buyer2.mediacoin.com/ca/ca.buyer2.mediacoin.com-cert.pem
+
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer2.mediacoin.com/connection-buyer2.json
+echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer2.mediacoin.com/connection-buyer2.yaml
