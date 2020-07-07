@@ -102,7 +102,6 @@ function networkDown() {
 
     # remove channel and script artifacts
     sudo rm -rf channel-artifacts log.txt log.txt1 ${CC_NAME}.tar.gz ${CC_NAME} ${CC_NAME2}.tar.gz
-  
 }
 
 networkDown
@@ -248,13 +247,10 @@ function createArtist {
 
 function createBuyer {
 
-  echo
-	echo "Enroll the CA admin"
-  echo
+  display  "Enroll the CA admin"
 	mkdir -p organizations/peerOrganizations/buyer.mediacoin.com/
 
 	export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/
-
 
   set -x
   fabric-ca-client enroll -u https://admin:adminpw@localhost:8054 --caname ca-buyer --tls.certfiles ${PWD}/organizations/fabric-ca/buyer/tls-cert.pem
@@ -275,9 +271,7 @@ function createBuyer {
     Certificate: cacerts/localhost-8054-ca-buyer.pem
     OrganizationalUnitIdentifier: orderer' > ${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/msp/config.yaml
 
-  echo
-	echo "Register peer0"
-  echo
+  display "Register peer0"
   set -x
 	fabric-ca-client register --caname ca-buyer --id.name peer0 --id.secret peer0pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/buyer/tls-cert.pem
   set +x
@@ -310,7 +304,6 @@ function createBuyer {
   set -x
   fabric-ca-client enroll -u https://peer0:peer0pw@localhost:8054 --caname ca-buyer -M ${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls --enrollment.profile tls --csr.hosts peer0.buyer.mediacoin.com --csr.hosts localhost --tls.certfiles ${PWD}/organizations/fabric-ca/buyer/tls-cert.pem
   set +x
-
 
   cp ${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls/ca.crt
   cp ${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls/signcerts/* ${PWD}/organizations/peerOrganizations/buyer.mediacoin.com/peers/peer0.buyer.mediacoin.com/tls/server.crt
@@ -636,13 +629,15 @@ display "## Generate the org admin msp"
   cp ${PWD}/organizations/peerOrganizations/buyer2.mediacoin.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/buyer2.mediacoin.com/users/Admin@buyer2.mediacoin.com/msp/config.yaml
 }
 
-display ">>>>>>>>>>>>>>> Deleting the old folders (organizations/peerOrganizations) <<<<<<<<<<<<<<<"
+display "############ Deleting folders (org*s/*Organizations)       ##############"
+
 if [ -d "organizations/peerOrganizations" ]; then
     rm -Rf organizations/peerOrganizations && rm -Rf organizations/ordererOrganizations
 fi
-display ">>>>>>>>>>>>>>> Deleted the old folders (organizations/peerOrganizations) <<<<<<<<<<<<<<<"
 
-display ">>>>>>>>>>>>>>> Create crypto material using Fabric CAs  <<<<<<<<<<<<<<<" 
+display "############ Deleted folders (org*s/*Organizations)       ###############" 
+ 
+display "############ Create crypto material using Fabric CAs      ###############" 
 echo "Checking for Fabric CA client"
 fabric-ca-client version > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -671,12 +666,12 @@ createBuyer2
 
 createBuyer
 
-display "############ Create Orderer Org Identities ###############"
+display "############ Creating Orderer Org Identities              ###############"
 
 createOrderer
 
 display "############ Created Orderer/Artist/Buyer Orgs Identities ###############"
-
+display "############ Creating CCP Files                           ###############"
 function one_line_pem {
     echo "`awk 'NF {sub(/\\n/, ""); printf "%s\\\\\\\n",$0;}' $1`"
 }
@@ -702,6 +697,7 @@ function yaml_ccp {
         -e "s#\${CAPEM}#$CP#" \
         organizations/ccp-template.yaml | sed -e $'s/\\\\n/\\\n        /g'
 }
+
 ORG=1
 P0PORT=7051
 CAPORT=7054
@@ -729,10 +725,13 @@ CAPORT=8054
 PEERPEM=organizations/peerOrganizations/buyer2.mediacoin.com/tlsca/tlsca.buyer2.mediacoin.com-cert.pem
 CAPEM=organizations/peerOrganizations/buyer2.mediacoin.com/ca/ca.buyer2.mediacoin.com-cert.pem
 
+cp organizations/peerOrganizations/buyer2.mediacoin.com/connection-buyer2.json /home/ubuntu/wallet/
+cp ${CAPEM} /home/ubuntu/wallet/
+
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer2.mediacoin.com/connection-buyer2.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer2.mediacoin.com/connection-buyer2.yaml
 
-display "#########  Generating Orderer Genesis block ##############"
+display "############ Generating Orderer Genesis block             ###############" 
 # Note: For some unknown reason (at least for now) the block file can't be
 # named orderer.genesis.block or the orderer will fail to launch!
 set -x
@@ -743,9 +742,9 @@ if [ $res -ne 0 ]; then
   echo "Failed to generate orderer genesis block..."
   exit 1
 fi
-display "#########  Generated Orderer Genesis block ##############"
+display "############ Generated Orderer Genesis block              ###############"
 
-display "#########  Starting the network with couchdb ##############"
+display "############ Starting the network with couchdb            ###############" 
 
 COMPOSE_FILES="-f ${COMPOSE_FILE_BASE} -f ${COMPOSE_FILE_COUCH}"
 
@@ -753,9 +752,8 @@ IMAGE_TAG=$IMAGETAG docker-compose ${COMPOSE_FILES}  -f docker/docker-compose-co
 
 docker ps -a
 
-display "#########  Started the network with couchdb ##############"
-
-echo "Creating the channel-artifacts folder"
+display "############ Creating the channel-artifacts folder        ###############" 
+ 
 if [ ! -d "channel-artifacts" ]; then
 	mkdir channel-artifacts
 fi
@@ -795,9 +793,8 @@ createChannelTx() {
 }
 
 createAncorPeerTx() {
-	for orgmsp in ArtistMSP BuyerMSP; do
-		echo "#######    Generating anchor peer update for ${orgmsp}  ##########"
-	 
+	for orgmsp in ArtistMSP BuyerMSP; do 
+	  display "############ Generating anchor peer update for ${orgmsp}  ###############"  
 		configtxgen -profile TwoOrgsChannel \
 			-outputAnchorPeersUpdate ./channel-artifacts/${orgmsp}anchors.tx \
 			-channelID $CHANNEL_NAME \
@@ -934,5 +931,4 @@ joinChannel
 echo "Updating anchor peers for artist..."
 updateAnchorPeers 
  
-
 display "========= Channel successfully joined =========== "
