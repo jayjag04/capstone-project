@@ -2,9 +2,7 @@
 
 source ./00_setEnv.sh
 
-# Obtain CONTAINER_IDS and remove them
-# TODO Might want to make this optional - could clear other containers
-# This function is called when you bring a network down
+
 function clearContainers() {
   CONTAINER_IDS=$(docker ps -a | awk '($2 ~ /dev-peer.*/) {print $1}')
    CONTAINER_IDS=$(docker ps -aq)
@@ -15,9 +13,6 @@ function clearContainers() {
   fi
 }
 
-# Delete any images that were generated as a part of this setup
-# specifically the following images are often left behind:
-# This function is called when you bring the network down
 function removeUnwantedImages() {
   DOCKER_IMAGE_IDS=$(docker images | awk '($1 ~ /dev-peer.*/) {print $3}')
   if [ -z "$DOCKER_IMAGE_IDS" -o "$DOCKER_IMAGE_IDS" == " " ]; then
@@ -49,7 +44,8 @@ function networkDown() {
 
     # remove channel and script artifacts
     sudo rm -rf channel-artifacts log.txt log.txt1 ${CC_NAME}.tar.gz ${CC_NAME} ${CC_NAME2}.tar.gz
-  
 }
+
+networkDown
 
 networkDown

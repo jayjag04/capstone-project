@@ -257,10 +257,6 @@ chaincodeQuery() {
   echo   
 }
 
-chaincodeQuery 3
-
-exit 0
-
 ## at first we package the chaincode
 packageChaincode 1
 

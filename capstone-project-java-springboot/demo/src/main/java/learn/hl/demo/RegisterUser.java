@@ -30,8 +30,7 @@ public class RegisterUser {
 
 		// Create a CA client for interacting with the CA.
 		Properties props = new Properties();
-		props.put("pemFile",
-				"/home/ubuntu/wallet/ca.artist.mediacoin.com-cert.pem");
+		props.put("pemFile",  "/home/ubuntu/wallet/ca.artist.mediacoin.com-cert.pem");
 		props.put("allowAllHostNames", "true");
 		HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:7054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
@@ -99,8 +98,8 @@ public class RegisterUser {
 
 		};
 
-//		Collection<HFCAIdentity> hfcaIdentities = caClient.getHFCAIdentities(admin);
-//		((HFCAIdentity)hfcaIdentities[0])
+		//	Collection<HFCAIdentity> hfcaIdentities = caClient.getHFCAIdentities(admin);
+		//	((HFCAIdentity)hfcaIdentities[0])
 
 		// Register the user, enroll the user, and import the new identity into the wallet.
 		RegistrationRequest registrationRequest = new RegistrationRequest("appUser4");
@@ -111,7 +110,7 @@ public class RegisterUser {
 		Enrollment enrollment = caClient.enroll("appUser4", enrollmentSecret);
 		Identity user = Identity.createIdentity("ArtistMSP", enrollment.getCert(), enrollment.getKey());
 		wallet.put("appUser4", user);
-		System.out.println("Successfully enrolled user \"appUser2\" and imported it into the wallet");
+		System.out.println("Successfully enrolled user \"appUser4\" and imported it into the wallet");
 	}
 
 }

@@ -60,7 +60,46 @@ public class DemoApplication {
              result = contract.evaluateTransaction("queryMedium", "CONTRACT101");
             System.out.println(new String(result));
 
+            result = contract.evaluateTransaction("QueryAllMediaContracts");
+            System.out.println(new String(result));
+            return new String(result);
 
+        }
+    }
+
+    @GetMapping("/contracts1")
+    public String getAllMediaOnSecChannel() throws Exception {
+        System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
+        EnrollAdmin.createAdmin();
+        RegisterUser.register();
+        Path walletPath = Paths.get("/home/ubuntu/wallet");
+        Wallet wallet = Wallet.createFileSystemWallet(walletPath);
+        // load a CCP
+        Path networkConfigPath =  Paths.get("/home/ubuntu/wallet/connection-artist.json");
+        Gateway.Builder builder = Gateway.createBuilder();
+        builder.identity(wallet, "appUser4").networkConfig(networkConfigPath).discovery(true);
+
+        // create a gateway connection
+        try (Gateway gateway = builder.connect()) {
+            // get the network and contract
+            Network network = gateway.getNetwork("mediachannel2");
+            Contract contract = network.getContract("artistbuyer2");
+
+            byte[] result;
+           
+            System.out.println("*************** Query all media ***************");
+            result = contract.evaluateTransaction("queryAllCars");
+            System.out.println(new String(result));
+
+            contract.submitTransaction("CreateAlbumContract", "CONTRACT101", "Hyperledger Sings", "10000", "NEW");
+            contract.submitTransaction("CreateAlbumContract", "CONTRACT102", "New technology is great", "10000", "NEW");
+
+            System.out.println("*************** Query CONTRACT02 ***************");
+             result = contract.evaluateTransaction("queryMedium", "CONTRACT101");
+            System.out.println(new String(result));
+
+            result = contract.evaluateTransaction("QueryAllMediaContracts");
+            System.out.println(new String(result));
             return new String(result);
 
         }
