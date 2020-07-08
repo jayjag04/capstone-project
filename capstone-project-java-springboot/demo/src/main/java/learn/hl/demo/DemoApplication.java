@@ -30,9 +30,7 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
- 
-
-    @GetMapping
+    @GetMapping("/contracts")
     public String getAllMedia() throws Exception {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
         EnrollAdmin.createAdmin();
@@ -58,7 +56,7 @@ public class DemoApplication {
             System.out.println(new String(result));
 
             contract.submitTransaction("CreateAlbumContract", "CONTRACT101", "Hyperledger Sings", "10000", "NEW");
- System.out.println("*************** Query CONTRACT02 ***************");
+            System.out.println("*************** Query CONTRACT02 ***************");
              result = contract.evaluateTransaction("queryMedium", "CONTRACT101");
             System.out.println(new String(result));
 
