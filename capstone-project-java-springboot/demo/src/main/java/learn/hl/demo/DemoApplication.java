@@ -67,7 +67,7 @@ public class DemoApplication {
         }
     }
 
-    @GetMapping("/contracts1")
+    @GetMapping("/contracts2")
     public String getAllMediaOnSecChannel() throws Exception {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
         EnrollAdmin.createAdmin();

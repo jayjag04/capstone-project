@@ -9,10 +9,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ContractController {
-    @GetMapping({"/contract", "/hello"})
+    @GetMapping({"/contract1", "/hello"})
     public String hello(Model model) {
         // model.addAttribute("name", name);
         return "contract";
+    }
+
+    @GetMapping({"/contract2", "/hello2"})
+    public String contract2(Model model) {
+        // model.addAttribute("name", name);
+        return "contract2";
     }
 
     @PostMapping("/albums/create")
