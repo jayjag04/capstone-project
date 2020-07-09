@@ -28,7 +28,7 @@ public class ContractController {
         return "contract created successfully";
     }
 
-        @PostMapping("/albums/create2")
+    @PostMapping("/albums/create2")
     @ResponseBody
     public String create2(Model model, @RequestParam String contractfor) throws Exception {
         MediaContract.Create2(contractfor);

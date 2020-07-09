@@ -101,7 +101,7 @@
         async function createAlbum(eve) {
             document.getElementById('status').innerText = 'Posting data';
             eve.preventDefault();
-            const url = 'http://localhost:8085/albums/create?contractfor=' + document.getElementById('album-name').value;
+            const url = 'http://localhost:8085/albums/create2?contractfor=' + document.getElementById('album-name').value;
             // post body data
             const mediaContract = {
                 contractFor: 'from the app'

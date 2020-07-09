@@ -59,7 +59,7 @@ public class MediaContract {
             byte[] result;
             Random rand = new Random();
 
-            contract.submitTransaction("CreateAlbumContract", "CONTRACT" + String.valueOf(rand.nextInt(1000)),  contractFor, "10000", "NEW");
+            contract.submitTransaction("CreateAlbumContract", "CONTRACT" + String.valueOf(rand.nextInt(1000)),  contractFor, "10000", "NEW2");
 
             System.out.println("*************** Query all media ***************");
             result = contract.evaluateTransaction("QueryAllMediaContracts");
